@@ -440,3 +440,34 @@ function createCoinFlip() {
 }
 
 renderGames();
+function closeGame() {
+  modal.classList.add("hidden");
+  gameArea.innerHTML = "";
+  document.onkeydown = null;
+  currentGameId = null;
+}
+
+document.getElementById("closeModal").addEventListener("click", closeGame);
+document.getElementById("exitGame").addEventListener("click", closeGame);
+
+modal.addEventListener("click", event => {
+  if (event.target === modal) {
+    closeGame();
+  }
+});
+
+function restartCurrentGame() {
+  if (currentGameId) {
+    openGame(currentGameId);
+  }
+}
+
+function toggleFullscreen() {
+  const player = document.querySelector(".game-player");
+
+  if (!document.fullscreenElement) {
+    player.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
+}
