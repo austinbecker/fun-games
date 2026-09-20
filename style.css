@@ -1,11 +1,10 @@
 :root {
-  --background: #080808;
+  --black: #080808;
   --panel: #121212;
-  --panel-light: #1b1b1b;
   --gold: #d89b26;
-  --gold-light: #ffc84d;
+  --gold-light: #ffca4d;
   --text: #eeeeee;
-  --muted: #8d8d8d;
+  --muted: #888888;
 }
 
 * {
@@ -17,39 +16,32 @@ body {
   min-height: 100vh;
   color: var(--text);
   background:
-    radial-gradient(circle at 50% -20%, #2a2112 0, transparent 38%),
-    var(--background);
+    radial-gradient(circle at 50% -20%, #302410, transparent 40%),
+    var(--black);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .topbar {
-  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 68px;
   padding: 0 7%;
-  border-bottom: 1px solid #242424;
-  background: rgba(5, 5, 5, 0.9);
+  border-bottom: 1px solid #292929;
+  background: #090909;
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   color: var(--gold-light);
   font-size: 15px;
   font-weight: bold;
   letter-spacing: 2px;
 }
 
-.brand-icon {
-  font-size: 25px;
-}
-
 .account {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   color: #aaa;
   font-size: 13px;
 }
@@ -67,11 +59,11 @@ body {
 
 main {
   width: min(1100px, 90%);
-  margin: 0 auto;
+  margin: auto;
 }
 
 .hero {
-  padding: 55px 0 28px;
+  padding: 55px 0 25px;
   text-align: center;
 }
 
@@ -86,7 +78,6 @@ main {
 h1 {
   margin: 0;
   font-size: clamp(30px, 5vw, 52px);
-  letter-spacing: -1px;
 }
 
 .subtitle {
@@ -94,13 +85,13 @@ h1 {
   color: var(--muted);
 }
 
-.search-area {
+.search-box {
   position: relative;
   width: min(500px, 100%);
   margin: auto;
 }
 
-.search-area input {
+.search-box input {
   width: 100%;
   padding: 14px 45px 14px 18px;
   color: white;
@@ -108,19 +99,18 @@ h1 {
   border-radius: 25px;
   outline: none;
   background: #101010;
-  box-shadow: 0 0 18px rgba(216, 155, 38, 0.08);
 }
 
-.search-area input:focus {
+.search-box input:focus {
   border-color: var(--gold-light);
 }
 
-.search-area span {
+.search-box span {
   position: absolute;
-  top: 9px;
+  top: 7px;
   right: 17px;
   color: var(--gold-light);
-  font-size: 25px;
+  font-size: 27px;
 }
 
 .controls {
@@ -128,16 +118,13 @@ h1 {
   align-items: center;
   justify-content: space-between;
   margin: 15px 0;
-}
-
-.results-label {
   color: var(--gold);
   font-size: 11px;
   letter-spacing: 1px;
 }
 
 .controls select {
-  padding: 10px 35px 10px 13px;
+  padding: 10px;
   color: var(--gold-light);
   border: 1px solid #6b4b12;
   border-radius: 5px;
@@ -165,29 +152,14 @@ h1 {
 .game-card:hover {
   border-color: var(--gold);
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(216, 155, 38, 0.16);
+  box-shadow: 0 10px 30px #d89b2625;
 }
 
 .card-image {
-  position: relative;
   display: grid;
   place-items: center;
   height: 145px;
-  overflow: hidden;
-  font-size: 58px;
-}
-
-.card-image::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background: linear-gradient(135deg, transparent, rgba(0, 0, 0, 0.45));
-}
-
-.card-image span {
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 5px 4px #000);
+  font-size: 60px;
 }
 
 .snake-bg {
@@ -219,12 +191,11 @@ h1 {
 }
 
 .card-content h3 {
-  margin: 0 0 6px;
-  font-size: 18px;
+  margin: 0 0 7px;
 }
 
 .card-content p {
-  min-height: 34px;
+  min-height: 35px;
   margin: 0 0 15px;
   color: var(--muted);
   font-size: 13px;
@@ -240,7 +211,6 @@ h1 {
   color: var(--gold);
   font-size: 10px;
   font-weight: bold;
-  letter-spacing: 1px;
 }
 
 .play-button {
@@ -263,66 +233,129 @@ footer {
   padding: 20px 7%;
   color: #666;
   border-top: 1px solid #202020;
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 1px;
 }
 
+/* Full-screen game player */
+
 .modal {
   position: fixed;
-  z-index: 5;
+  z-index: 20;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.8);
+  background: #000;
 }
 
 .hidden {
   display: none;
 }
 
-.modal-box {
-  position: relative;
-  width: min(600px, 100%);
-  min-height: 300px;
-  padding: 30px;
-  border: 1px solid var(--gold);
-  border-radius: 12px;
+.game-player {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background: #000;
+}
+
+.player-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 45px;
+  padding: 0 14px;
+  border-top: 1px solid #9a6b20;
+  border-bottom: 1px solid #9a6b20;
   background: #111;
-  box-shadow: 0 0 50px rgba(216, 155, 38, 0.2);
 }
 
-.modal-box h2 {
-  margin-top: 0;
+.player-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--gold-light);
-  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  color: white;
-  border: 0;
-  background: transparent;
+.toolbar-button,
+.player-actions button {
+  color: var(--gold);
+  border: 1px solid #725018;
+  border-radius: 4px;
+  background: #1c160d;
   cursor: pointer;
-  font-size: 28px;
+}
+
+.toolbar-button {
+  padding: 6px 10px;
+}
+
+.player-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.player-actions button {
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+}
+
+.toolbar-button:hover,
+.player-actions button:hover {
+  color: #111;
+  background: var(--gold-light);
+}
+
+.game-screen {
+  position: relative;
+  display: grid;
+  flex: 1;
+  place-items: center;
+  overflow: auto;
+  background: #000;
+}
+
+.loading-text {
+  color: #777;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.player-footer {
+  display: flex;
+  justify-content: space-between;
+  height: 25px;
+  padding: 7px 14px;
+  color: #555;
+  background: #090909;
+  font-size: 9px;
 }
 
 .play-board {
   display: grid;
   place-items: center;
   gap: 15px;
+  width: min(600px, 90vw);
   text-align: center;
 }
 
 .play-board button,
 .play-board input {
   padding: 10px 15px;
+  color: white;
   border: 1px solid var(--gold);
   border-radius: 5px;
-  color: white;
   background: #222;
+  cursor: pointer;
+}
+
+.play-board canvas {
+  max-width: 100%;
+  border: 1px solid #5d461c;
+  background: #101010;
 }
 
 .memory-grid {
@@ -352,6 +385,7 @@ footer {
   width: 280px;
   height: 150px;
   border-radius: 10px;
+  color: white;
   background: #a52b2b;
   cursor: pointer;
   font-weight: bold;
@@ -364,10 +398,6 @@ footer {
 @media (max-width: 750px) {
   .game-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .topbar {
-    padding: 0 4%;
   }
 }
 
@@ -384,129 +414,9 @@ footer {
     display: block;
     text-align: center;
   }
-}
-/* Full-screen game player */
 
-.modal {
-  position: fixed;
-  z-index: 20;
-  inset: 0;
-  display: block;
-  padding: 0;
-  background: #000;
-}
-
-.modal.hidden {
-  display: none;
-}
-
-.game-player {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100vh;
-  background: #000;
-}
-
-.player-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 45px;
-  padding: 0 14px;
-  border-top: 1px solid #9a6b20;
-  border-bottom: 1px solid #9a6b20;
-  background: #111;
-}
-
-.player-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #e7ab37;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.back-button,
-.player-actions button {
-  color: #d89b26;
-  border: 1px solid #725018;
-  border-radius: 4px;
-  background: #1c160d;
-  cursor: pointer;
-  font-size: 11px;
-}
-
-.back-button {
-  padding: 6px 10px;
-}
-
-.player-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.player-actions button {
-  width: 27px;
-  height: 27px;
-  font-size: 16px;
-}
-
-.back-button:hover,
-.player-actions button:hover {
-  color: #111;
-  background: #e7ab37;
-}
-
-.game-screen {
-  position: relative;
-  display: grid;
-  flex: 1;
-  place-items: center;
-  overflow: auto;
-  background: #000;
-}
-
-.loading-text {
-  color: #777;
-  font-size: 10px;
-  letter-spacing: 1px;
-}
-
-.player-footer {
-  display: flex;
-  justify-content: space-between;
-  height: 25px;
-  padding: 7px 14px;
-  color: #555;
-  background: #090909;
-  font-size: 9px;
-}
-
-#gameArea .play-board {
-  width: min(600px, 90vw);
-  max-height: 85vh;
-}
-
-#gameArea canvas {
-  max-width: 100%;
-  border: 1px solid #3f321c;
-  background: #101010;
-}
-
-@media (max-width: 600px) {
-  .player-toolbar {
-    height: 40px;
-    padding: 0 8px;
-  }
-
-  .player-title {
-    font-size: 10px;
-  }
-
-  .back-button {
-    font-size: 9px;
+  footer span {
+    display: block;
+    margin: 5px;
   }
 }
