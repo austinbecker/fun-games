@@ -1,36 +1,30 @@
-const games = [
-  {
-    id: "snake",
-    title: "Snake Arena",
-    description: "Eat the food and grow as long as possible.",
-    category: "arcade",
-    emoji: "🐍",
-    background: "snake-bg"
-  },
-  {
-    id: "memory",
-    title: "Memory Match",
-    description: "Find all matching pairs of symbols.",
-    category: "puzzle",
-    emoji: "🧠",
-    background: "memory-bg"
-  },
-  {
-    id: "reaction",
-    title: "Reaction Rush",
-    description: "Test how quickly you can react.",
-    category: "arcade",
-    emoji: "⚡",
-    background: "reaction-bg"
-  },
-  {
-    id: "tictactoe",
-    title: "Tic-Tac-Toe",
-    description: "Beat the computer in this classic game.",
-    category: "casual",
-    emoji: "⭕",
-    background: "tictactoe-bg"
-  },
+let currentGameId = null;
+
+function openGame(gameId) {
+  const game = games.find(item => item.id === gameId);
+
+  currentGameId = gameId;
+
+  document.getElementById("modalTitle").textContent =
+    game.title.toUpperCase();
+
+  document.getElementById("playerGameIcon").textContent = game.emoji;
+
+  document.getElementById("gameStatus").textContent = "LOADING...";
+
+  modal.classList.remove("hidden");
+
+  setTimeout(() => {
+    document.getElementById("gameStatus").textContent = "PLAYING";
+  }, 400);
+
+  if (gameId === "snake") createSnake();
+  if (gameId === "memory") createMemory();
+  if (gameId === "reaction") createReaction();
+  if (gameId === "tictactoe") createTicTacToe();
+  if (gameId === "number") createNumberGuess();
+  if (gameId === "coin") createCoinFlip();
+}
   {
     id: "number",
     title: "Number Guess",
