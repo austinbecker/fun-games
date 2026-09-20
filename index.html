@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Arcade</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">🎮</span>
+      <span>PIXEL ARCADE</span>
+    </div>
+
+    <div class="account">
+      <span>Guest Player</span>
+      <div class="avatar">P</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">WELCOME TO THE ARCADE</p>
+      <h1>Choose your next challenge</h1>
+      <p class="subtitle">Play quick browser games directly from your library.</p>
+
+      <div class="search-area">
+        <input id="searchInput" type="search" placeholder="Search games..." />
+        <span>⌕</span>
+      </div>
+    </section>
+
+    <section class="controls">
+      <div>
+        <span class="results-label">SHOWING <strong id="gameCount">6</strong> GAMES</span>
+      </div>
+
+      <select id="categoryFilter">
+        <option value="all">ALL CATEGORIES</option>
+        <option value="arcade">ARCADE</option>
+        <option value="puzzle">PUZZLE</option>
+        <option value="casual">CASUAL</option>
+      </select>
+    </section>
+
+    <section id="gameGrid" class="game-grid"></section>
+  </main>
+
+  <div id="gameModal" class="modal hidden">
+    <div class="modal-box">
+      <button id="closeModal" class="close-button">×</button>
+      <h2 id="modalTitle">Game</h2>
+      <div id="gameArea"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>PIXEL ARCADE © 2026</p>
+    <p>Built for the web</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
