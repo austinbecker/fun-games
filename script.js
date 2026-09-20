@@ -1,34 +1,40 @@
-let currentGameId = null;
-
-function openGame(gameId) {
-  const game = games.find(item => item.id === gameId);
-
-  currentGameId = gameId;
-
-  document.getElementById("modalTitle").textContent =
-    game.title.toUpperCase();
-
-  document.getElementById("playerGameIcon").textContent = game.emoji;
-
-  document.getElementById("gameStatus").textContent = "LOADING...";
-
-  modal.classList.remove("hidden");
-
-  setTimeout(() => {
-    document.getElementById("gameStatus").textContent = "PLAYING";
-  }, 400);
-
-  if (gameId === "snake") createSnake();
-  if (gameId === "memory") createMemory();
-  if (gameId === "reaction") createReaction();
-  if (gameId === "tictactoe") createTicTacToe();
-  if (gameId === "number") createNumberGuess();
-  if (gameId === "coin") createCoinFlip();
-}
+const games = [
+  {
+    id: "snake",
+    title: "Snake Arena",
+    description: "Eat the food and grow as long as possible.",
+    category: "arcade",
+    emoji: "🐍",
+    background: "snake-bg"
+  },
+  {
+    id: "memory",
+    title: "Memory Match",
+    description: "Find all matching pairs of symbols.",
+    category: "puzzle",
+    emoji: "🧠",
+    background: "memory-bg"
+  },
+  {
+    id: "reaction",
+    title: "Reaction Rush",
+    description: "Test how quickly you can react.",
+    category: "arcade",
+    emoji: "⚡",
+    background: "reaction-bg"
+  },
+  {
+    id: "tictactoe",
+    title: "Tic-Tac-Toe",
+    description: "Beat the computer in this classic game.",
+    category: "casual",
+    emoji: "⭕",
+    background: "tictactoe-bg"
+  },
   {
     id: "number",
     title: "Number Guess",
-    description: "Guess the secret number in fewer attempts.",
+    description: "Guess the secret number from 1 to 100.",
     category: "puzzle",
     emoji: "🔢",
     background: "number-bg"
@@ -48,8 +54,12 @@ const searchInput = document.getElementById("searchInput");
 const categoryFilter = document.getElementById("categoryFilter");
 const gameCount = document.getElementById("gameCount");
 const modal = document.getElementById("gameModal");
-const modalTitle = document.getElementById("modalTitle");
 const gameArea = document.getElementById("gameArea");
+const modalTitle = document.getElementById("modalTitle");
+const playerGameIcon = document.getElementById("playerGameIcon");
+const gameStatus = document.getElementById("gameStatus");
+
+let currentGameId = null;
 
 function renderGames() {
   const search = searchInput.value.toLowerCase();
@@ -71,7 +81,7 @@ function renderGames() {
   gameGrid.innerHTML = filteredGames.map(game => `
     <article class="game-card">
       <div class="card-image ${game.background}">
-        <span>${game.emoji}</span>
+        ${game.emoji}
       </div>
 
       <div class="card-content">
@@ -92,9 +102,21 @@ function renderGames() {
 function openGame(gameId) {
   const game = games.find(item => item.id === gameId);
 
-  modalTitle.textContent = game.title;
+  currentGameId = gameId;
+  modalTitle.textContent = game.title.toUpperCase();
+  playerGameIcon.textContent = game.emoji;
+  gameStatus.textContent = "LOADING...";
+  gameArea.innerHTML = `<div class="loading-text">LOADING...</div>`;
+
   modal.classList.remove("hidden");
 
+  setTimeout(() => {
+    gameStatus.textContent = "PLAYING";
+    startSelectedGame(gameId);
+  }, 350);
+}
+
+function startSelectedGame(gameId) {
   if (gameId === "snake") createSnake();
   if (gameId === "memory") createMemory();
   if (gameId === "reaction") createReaction();
@@ -106,13 +128,35 @@ function openGame(gameId) {
 function closeGame() {
   modal.classList.add("hidden");
   gameArea.innerHTML = "";
+  document.onkeydown = null;
+  currentGameId = null;
+  gameStatus.textContent = "READY";
+}
+
+function restartCurrentGame() {
+  if (currentGameId) {
+    openGame(currentGameId);
+  }
+}
+
+function toggleFullscreen() {
+  const player = document.querySelector(".game-player");
+
+  if (!document.fullscreenElement) {
+    player.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
 }
 
 document.getElementById("closeModal").addEventListener("click", closeGame);
+document.getElementById("exitGame").addEventListener("click", closeGame);
+document.getElementById("restartButton").addEventListener("click", restartCurrentGame);
 
-modal.addEventListener("click", event => {
-  if (event.target === modal) closeGame();
-});
+document.getElementById("fullscreenButton").addEventListener(
+  "click",
+  toggleFullscreen
+);
 
 searchInput.addEventListener("input", renderGames);
 categoryFilter.addEventListener("change", renderGames);
@@ -122,7 +166,7 @@ function createSnake() {
     <div class="play-board">
       <canvas id="snakeCanvas" width="300" height="300"></canvas>
       <p>Use the arrow keys to move.</p>
-      <button onclick="startSnake()">START GAME</button>
+      <button id="snakeStart">START GAME</button>
       <strong id="snakeScore">Score: 0</strong>
     </div>
   `;
@@ -130,38 +174,39 @@ function createSnake() {
   const canvas = document.getElementById("snakeCanvas");
   const ctx = canvas.getContext("2d");
 
-  let snake;
-  let food;
-  let direction;
-  let score;
-  let gameLoop;
+  let snake = [];
+  let food = {};
+  let direction = { x: 20, y: 0 };
+  let score = 0;
+  let loop;
 
-  window.startSnake = function() {
+  document.getElementById("snakeStart").addEventListener("click", () => {
     snake = [{ x: 140, y: 140 }];
-    food = { x: 80, y: 80 };
+    food = {
+      x: Math.floor(Math.random() * 15) * 20,
+      y: Math.floor(Math.random() * 15) * 20
+    };
     direction = { x: 20, y: 0 };
     score = 0;
 
-    clearInterval(gameLoop);
-    gameLoop = setInterval(updateSnake, 120);
-  };
+    clearInterval(loop);
+    loop = setInterval(updateSnake, 120);
+  });
 
   document.onkeydown = event => {
-    const key = event.key;
-
-    if (key === "ArrowUp" && direction.y === 0) {
+    if (event.key === "ArrowUp" && direction.y === 0) {
       direction = { x: 0, y: -20 };
     }
 
-    if (key === "ArrowDown" && direction.y === 0) {
+    if (event.key === "ArrowDown" && direction.y === 0) {
       direction = { x: 0, y: 20 };
     }
 
-    if (key === "ArrowLeft" && direction.x === 0) {
+    if (event.key === "ArrowLeft" && direction.x === 0) {
       direction = { x: -20, y: 0 };
     }
 
-    if (key === "ArrowRight" && direction.x === 0) {
+    if (event.key === "ArrowRight" && direction.x === 0) {
       direction = { x: 20, y: 0 };
     }
   };
@@ -172,15 +217,19 @@ function createSnake() {
       y: snake[0].y + direction.y
     };
 
-    if (
+    const hitWall =
       head.x < 0 ||
-      head.x >= canvas.width ||
+      head.x >= 300 ||
       head.y < 0 ||
-      head.y >= canvas.height ||
-      snake.some(part => part.x === head.x && part.y === head.y)
-    ) {
-      clearInterval(gameLoop);
-      alert(`Game over! Score: ${score}`);
+      head.y >= 300;
+
+    const hitSelf = snake.some(part =>
+      part.x === head.x && part.y === head.y
+    );
+
+    if (hitWall || hitSelf) {
+      clearInterval(loop);
+      gameStatus.textContent = "GAME OVER";
       return;
     }
 
@@ -189,6 +238,7 @@ function createSnake() {
     if (head.x === food.x && head.y === food.y) {
       score++;
       document.getElementById("snakeScore").textContent = `Score: ${score}`;
+
       food = {
         x: Math.floor(Math.random() * 15) * 20,
         y: Math.floor(Math.random() * 15) * 20
@@ -198,13 +248,15 @@ function createSnake() {
     }
 
     ctx.fillStyle = "#101010";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, 300, 300);
 
     ctx.fillStyle = "#ffca3a";
     ctx.fillRect(food.x, food.y, 18, 18);
 
     ctx.fillStyle = "#43d17a";
-    snake.forEach(part => ctx.fillRect(part.x, part.y, 18, 18));
+    snake.forEach(part => {
+      ctx.fillRect(part.x, part.y, 18, 18);
+    });
   }
 }
 
@@ -226,23 +278,24 @@ function createMemory() {
   let matches = 0;
 
   symbols.forEach(symbol => {
-    const button = document.createElement("button");
-    button.className = "memory-card";
-    button.textContent = "?";
-    button.dataset.symbol = symbol;
+    const card = document.createElement("button");
 
-    button.addEventListener("click", () => {
-      if (locked || button.classList.contains("revealed")) return;
+    card.className = "memory-card";
+    card.textContent = "?";
+    card.dataset.symbol = symbol;
 
-      button.textContent = symbol;
-      button.classList.add("revealed");
+    card.addEventListener("click", () => {
+      if (locked || card.classList.contains("revealed")) return;
+
+      card.textContent = symbol;
+      card.classList.add("revealed");
 
       if (!firstCard) {
-        firstCard = button;
+        firstCard = card;
         return;
       }
 
-      secondCard = button;
+      secondCard = card;
       locked = true;
 
       if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
@@ -254,6 +307,7 @@ function createMemory() {
         if (matches === 4) {
           document.getElementById("memoryStatus").textContent =
             "You found every pair!";
+          gameStatus.textContent = "COMPLETE";
         }
       } else {
         setTimeout(() => {
@@ -268,7 +322,7 @@ function createMemory() {
       }
     });
 
-    grid.appendChild(button);
+    grid.appendChild(card);
   });
 }
 
@@ -282,28 +336,29 @@ function createReaction() {
 
   const box = document.getElementById("reactionBox");
   const status = document.getElementById("reactionStatus");
-  let startTime;
-  let canClick = false;
 
-  const delay = Math.floor(Math.random() * 3000) + 1500;
+  let canClick = false;
+  let startTime;
 
   setTimeout(() => {
     box.classList.add("ready");
     box.textContent = "CLICK!";
     canClick = true;
     startTime = Date.now();
-  }, delay);
+  }, Math.random() * 3000 + 1500);
 
   box.addEventListener("click", () => {
     if (!canClick) {
-      status.textContent = "Too early! Refresh the game to try again.";
+      status.textContent = "Too early! Press restart and try again.";
       return;
     }
 
-    const reactionTime = Date.now() - startTime;
-    status.textContent = `Your reaction time was ${reactionTime} ms.`;
+    const time = Date.now() - startTime;
+
+    status.textContent = `Your reaction time was ${time} ms.`;
     box.textContent = "NICE!";
     canClick = false;
+    gameStatus.textContent = "COMPLETE";
   });
 }
 
@@ -321,8 +376,10 @@ function createTicTacToe() {
 
   board.forEach((_, index) => {
     const button = document.createElement("button");
+
     button.className = "memory-card";
     button.addEventListener("click", () => playerMove(index, button));
+
     ticBoard.appendChild(button);
   });
 
@@ -334,34 +391,41 @@ function createTicTacToe() {
 
     if (checkWinner(board)) {
       status.textContent = "You win!";
+      gameStatus.textContent = "WINNER";
       return;
     }
 
-    if (board.every(Boolean)) {
+    const openSpaces = board
+      .map((value, i) => value ? null : i)
+      .filter(value => value !== null);
+
+    if (openSpaces.length === 0) {
       status.textContent = "Draw!";
       return;
     }
 
-    const available = board
-      .map((value, i) => value ? null : i)
-      .filter(value => value !== null);
-
     const computerIndex =
-      available[Math.floor(Math.random() * available.length)];
+      openSpaces[Math.floor(Math.random() * openSpaces.length)];
 
     board[computerIndex] = "O";
     ticBoard.children[computerIndex].textContent = "O";
 
     if (checkWinner(board)) {
       status.textContent = "The computer wins.";
+      gameStatus.textContent = "GAME OVER";
     }
   }
 
   function checkWinner(currentBoard) {
     const wins = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8],
-      [0, 3, 6], [1, 4, 7], [2, 5, 8],
-      [0, 4, 8], [2, 4, 6]
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
     ];
 
     return wins.some(combo =>
@@ -380,7 +444,7 @@ function createNumberGuess() {
   gameArea.innerHTML = `
     <div class="play-board">
       <p>Guess a number from 1 to 100.</p>
-      <input id="guessInput" type="number" min="1" max="100" />
+      <input id="guessInput" type="number" min="1" max="100">
       <button id="guessButton">GUESS</button>
       <p id="guessStatus">Good luck!</p>
     </div>
@@ -399,6 +463,7 @@ function createNumberGuess() {
 
     if (guess === secret) {
       status.textContent = `Correct! You won in ${attempts} attempts.`;
+      gameStatus.textContent = "WINNER";
     } else if (guess < secret) {
       status.textContent = "Too low.";
     } else {
@@ -411,57 +476,30 @@ function createCoinFlip() {
   gameArea.innerHTML = `
     <div class="play-board">
       <div id="coinResult" style="font-size: 80px;">🪙</div>
-      <button id="flipButton">FLIP COIN</button>
       <p id="flipStatus">Choose heads or tails.</p>
-      <button onclick="guessCoin('heads')">HEADS</button>
-      <button onclick="guessCoin('tails')">TAILS</button>
+      <button id="headsButton">HEADS</button>
+      <button id="tailsButton">TAILS</button>
     </div>
   `;
 
-  window.guessCoin = function(choice) {
+  document.getElementById("headsButton").onclick = () => flipCoin("heads");
+  document.getElementById("tailsButton").onclick = () => flipCoin("tails");
+
+  function flipCoin(choice) {
     const result = Math.random() < 0.5 ? "heads" : "tails";
-    const status = document.getElementById("flipStatus");
     const coin = document.getElementById("coinResult");
+    const status = document.getElementById("flipStatus");
 
     coin.textContent = result === "heads" ? "🙂" : "🪙";
 
     if (choice === result) {
       status.textContent = `It was ${result}. You guessed correctly!`;
+      gameStatus.textContent = "WINNER";
     } else {
-      status.textContent = `It was ${result}. Better luck next time.`;
+      status.textContent = `It was ${result}. Try again.`;
+      gameStatus.textContent = "TRY AGAIN";
     }
-  };
+  }
 }
 
 renderGames();
-function closeGame() {
-  modal.classList.add("hidden");
-  gameArea.innerHTML = "";
-  document.onkeydown = null;
-  currentGameId = null;
-}
-
-document.getElementById("closeModal").addEventListener("click", closeGame);
-document.getElementById("exitGame").addEventListener("click", closeGame);
-
-modal.addEventListener("click", event => {
-  if (event.target === modal) {
-    closeGame();
-  }
-});
-
-function restartCurrentGame() {
-  if (currentGameId) {
-    openGame(currentGameId);
-  }
-}
-
-function toggleFullscreen() {
-  const player = document.querySelector(".game-player");
-
-  if (!document.fullscreenElement) {
-    player.requestFullscreen?.();
-  } else {
-    document.exitFullscreen?.();
-  }
-}
