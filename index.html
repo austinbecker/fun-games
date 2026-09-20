@@ -1,31 +1,82 @@
-function closeGame() {
-  modal.classList.add("hidden");
-  gameArea.innerHTML = "";
-  document.onkeydown = null;
-  currentGameId = null;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Arcade</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-document.getElementById("closeModal").addEventListener("click", closeGame);
-document.getElementById("exitGame").addEventListener("click", closeGame);
+  <header class="topbar">
+    <div class="brand">🎮 PIXEL ARCADE</div>
+    <div class="account">
+      <span>Guest Player</span>
+      <div class="avatar">P</div>
+    </div>
+  </header>
 
-modal.addEventListener("click", event => {
-  if (event.target === modal) {
-    closeGame();
-  }
-});
+  <main>
+    <section class="hero">
+      <p class="eyebrow">WELCOME TO THE ARCADE</p>
+      <h1>Choose your next challenge</h1>
+      <p class="subtitle">Play browser games directly from your library.</p>
 
-function restartCurrentGame() {
-  if (currentGameId) {
-    openGame(currentGameId);
-  }
-}
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Search games...">
+        <span>⌕</span>
+      </div>
+    </section>
 
-function toggleFullscreen() {
-  const player = document.querySelector(".game-player");
+    <section class="controls">
+      <span>SHOWING <strong id="gameCount">6</strong> GAMES</span>
 
-  if (!document.fullscreenElement) {
-    player.requestFullscreen?.();
-  } else {
-    document.exitFullscreen?.();
-  }
-}
+      <select id="categoryFilter">
+        <option value="all">ALL CATEGORIES</option>
+        <option value="arcade">ARCADE</option>
+        <option value="puzzle">PUZZLE</option>
+        <option value="casual">CASUAL</option>
+      </select>
+    </section>
+
+    <section id="gameGrid" class="game-grid"></section>
+  </main>
+
+  <div id="gameModal" class="modal hidden">
+    <div class="game-player">
+
+      <div class="player-toolbar">
+        <button id="exitGame" class="toolbar-button">← EXIT</button>
+
+        <div class="player-title">
+          <span id="playerGameIcon">🎮</span>
+          <span id="modalTitle">GAME</span>
+        </div>
+
+        <div class="player-actions">
+          <button id="restartButton">↻</button>
+          <button id="fullscreenButton">⛶</button>
+          <button id="closeModal">×</button>
+        </div>
+      </div>
+
+      <div id="gameArea" class="game-screen">
+        <div class="loading-text">LOADING...</div>
+      </div>
+
+      <div class="player-footer">
+        <span>PIXEL ARCADE</span>
+        <span id="gameStatus">READY</span>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <span>PIXEL ARCADE © 2026</span>
+    <span>BUILT FOR THE WEB</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
